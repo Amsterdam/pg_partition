@@ -1,5 +1,5 @@
 # pg_partition
-Utility to partition new/existing table and data migration
+Utility to partition new/existing PostgreSql database tables. Data can be migration.
 
 
 The following environment variables needs to be set:

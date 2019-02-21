@@ -24,7 +24,7 @@ class PgConnection(object):
     def connect(self):
         try:
             dbparam = {
-                'host': environ.get('DATABASE_HOST', 'localhost'),
+                'host': environ.get('DATABASE_HOST', 'database'),
                 'dbname': environ.get('DATABASE_NAME', 'externaldata'),
                 'user': environ.get('DATABASE_USER', 'externaldata'),
                 'password': environ.get('DATABASE_PASSWORD', 'insecure')

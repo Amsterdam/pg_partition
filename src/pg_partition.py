@@ -121,12 +121,13 @@ class PgPartiton(object):
     def partition_table(self, table, column, ptype=None):
         # 0. check i f table has data and force migration partition type
         ranges = self.table_date_range(table, column)
-        if ranges:
+        if ranges and ranges != (None, None):
             if not ptype:
-                log.error(f'Table {table} has data. Specify partition type')
+                log.error(f'Table {table} has data. Specify partition type {ranges}')
                 exit(-1)
             # migrate data
             log.info(f'min: {ranges[0]}, max: {ranges[1]}, type: {ptype}')
+
         # 1. partition key should ref unique constraints
         data = self.pgconn.execute_fetch_all(TBL_PKEY_SQL(table))
         pcols = [i[0] for i in data]

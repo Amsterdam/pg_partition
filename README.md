@@ -25,7 +25,35 @@ positional arguments:
 optional arguments:
   -h, --help    show this help message and exit
 ```
-  
+
+#### Create Usage ####
+```
+usage: pg_partition.py create [-h] [--type {day,week,month}] table column
+
+positional arguments:
+  table                 table to be partitioned
+  column                column to be used for range
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --type {day,week,month}
+```
+
+#### Add Usage ####
+```
+usage: pg_partition.py add [-h] [--num NUM] [--date DATE]
+                           table {day,week,month}
+
+positional arguments:
+  table             table to be partitioned
+  {day,week,month}
+
+optional arguments:
+  -h, --help        show this help message and exit
+  --num NUM         partitions to create
+  --date DATE       start date (yyyymmdd)
+```
+
 #### Creating partitions ####
 ```
 # Convert 'table' to a range partitioned table by 'column'

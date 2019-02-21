@@ -1,8 +1,7 @@
 # pg_partition
-Utility to partition new/existing PostgreSql database tables. Data can be migration.
+Utility to partition new/existing PostgreSql database tables. Data can be migrated. Only date range partition type is supported.
 
-
-The following environment variables needs to be set:
+Required environment variables:
 ```
 DATABASE_HOST : hostname/ip of the PostgreSql server
 DATABASE_NAME : database to operate on

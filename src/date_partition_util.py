@@ -15,16 +15,13 @@ class DatePartitionUtil(object):
 
     def week_number(self, d=None):
         d = d if d is not None else self.today()
-        # cap at 28 due to iso 8601
-        if d.month == 12 and d.day > 28:
-            d.replace(day=28)
         return d.isocalendar()[1]
 
     def week_partition(self, d=None):
         d = d if d is not None else self.today()
-        end = datetime.strptime(
+        start = datetime.strptime(
             f"{d.year}_{self.week_number(d)}_1", "%Y_%W_%w")
-        start = end - timedelta(7)
+        end = start + timedelta(7)
         return (start, end)
 
     def month_partition(self, d=None):

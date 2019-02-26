@@ -20,7 +20,7 @@ class DatePartitionUtil(object):
     def week_partition(self, d=None):
         d = d if d is not None else self.today()
         start = datetime.strptime(
-            f"{d.year}-{self.week_number(d)}-1", '%G-%V-%w').date()
+            f"{d.year}-{self.week_number(d)}-1", '%G-%V-%u').date()
         end = start + timedelta(7)
         return (start, end)
 

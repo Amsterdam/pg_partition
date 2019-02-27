@@ -80,4 +80,5 @@ setup(
     tests_require=requires_test,
     extras_require=requires_extras,
     setup_requires=['flake8'],
+    scripts=['bin/pg_partition']
 )

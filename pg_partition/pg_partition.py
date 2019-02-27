@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 
-from pg_connection import PgConnection
-from date_partition_util import DatePartitionUtil
+from pg_partition.pg_connection import PgConnection
+from pg_partition.date_partition_util import DatePartitionUtil
 import logging
 import argparse
 from datetime import datetime
 from dateutil import relativedelta
+import sys
 
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
-
 # returns columns part of a primary key
+
+
 def TBL_PKEY_SQL(tbl):
     sql = f"""
         select kc.column_name, kc.constraint_name
@@ -88,11 +90,6 @@ def TBL_PARTITION_SQL(tbl, pcol):
 
 
 class PgPartiton(object):
-    def __init__(self):
-        self.pgconn = PgConnection()
-        self.pgconn.connect()
-        self.pu = DatePartitionUtil()
-
     def is_connected(self):
         return self.pgconn.connected
 
@@ -117,6 +114,20 @@ class PgPartiton(object):
         if d:
             return (d[0], d[1])
         return None
+
+    def __init__(self):
+        self.pgconn = PgConnection()
+        self.pgconn.connect()
+        self.pu = DatePartitionUtil()
+        self.functable = {
+            'day': (self.partition_by_day, 'days'),
+            'week': (self.partition_by_week, 'weeks'),
+            'month': (self.partition_by_month, 'months')
+        }
+
+    @property
+    def function_table(self):
+        return self.functable
 
     def partition_table(self, table, column, ptype=None):
         # 0. check i f table has data and force migration partition type
@@ -150,11 +161,11 @@ class PgPartiton(object):
         # prepare partitions for data
         if ptype and ranges:
             i = 0
-            tpl = pfunc[ptype]
+            tpl = self.functable[ptype]
             start = ranges[0]
             while(True):
                 d = start + relativedelta.relativedelta(**{tpl[1]: i})
-                q += "\t" + tpl[0](args.table, d) + "\n"
+                q += "\t" + tpl[0](table, d) + "\n"
                 i += 1
                 if d > ranges[1]:
                     break
@@ -167,13 +178,8 @@ class PgPartiton(object):
         self.pgconn.execute(q)
 
 
-if __name__ == "__main__":
+def main():
     pgpart = PgPartiton()
-    pfunc = {
-        'day': (pgpart.partition_by_day, 'days'),
-        'week': (pgpart.partition_by_week, 'weeks'),
-        'month': (pgpart.partition_by_month, 'months')
-    }
     if pgpart.is_connected():
         parser = argparse.ArgumentParser()
         subparsers = parser.add_subparsers()
@@ -193,6 +199,9 @@ if __name__ == "__main__":
         ap.add_argument("--date", help="start date (yyyymmdd)", type=str)
 
         args = parser.parse_args()
+        if len(sys.argv) == 1:
+            parser.print_help()
+            return
         if 'column' in args:
             print(f'Create partition {args.table} with col {args.column}')
             pgpart.partition_table(args.table, args.column, args.type)
@@ -202,10 +211,14 @@ if __name__ == "__main__":
                 start = datetime.strptime(args.date, '%Y%m%d')
             print(f'Add {args.num} {args.type} partition(s) to {args.table}')
             for i in range(args.num):
-                tpl = pfunc[args.type]
+                tpl = pgpart.function_table[args.type]
                 d = start + relativedelta.relativedelta(**{tpl[1]: i})
                 q = tpl[0](args.table, d)
                 log.info(q)
                 pgpart.execute(q)
     else:
         log.error('Not connected to db')
+
+
+if __name__ == "__main__":
+    main()

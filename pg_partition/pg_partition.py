@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from pg_connection import PgConnection
-from date_partition_util import DatePartitionUtil
+from pg_partition.pg_connection import PgConnection
+from pg_partition.date_partition_util import DatePartitionUtil
 import logging
 import argparse
 from datetime import datetime
@@ -12,8 +12,9 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
-
 # returns columns part of a primary key
+
+
 def TBL_PKEY_SQL(tbl):
     sql = f"""
         select kc.column_name, kc.constraint_name

@@ -76,9 +76,14 @@ setup(
     ],
     cmdclass={'test': PyTest},
     packages=packages,
+    package_dir={'': '.'},
     install_requires=requires,
     tests_require=requires_test,
     extras_require=requires_extras,
     setup_requires=['flake8'],
-    scripts=['bin/pg_partition']
+    entry_points={
+        'console_scripts': [
+            'pg_partition = pg_partition.pg_partition:main',
+        ],
+    }
 )

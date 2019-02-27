@@ -34,7 +34,7 @@ class PyTest(TestCommand):
 with codecs.open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-version = '2019.02.27.2'
+version = '2019.02.27.3'
 
 packages = ['pg_partition']
 
